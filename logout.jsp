@@ -2,6 +2,7 @@
 <%@ page import="java.io.*" %>
 <%
     // 세션에서 정보 가져오기
+    //배포 테스트 
     Integer sessionNumber = (Integer) session.getAttribute("sessionNumber");
     
     // EFS 세션 파일에 로그아웃 시간 기록 (삭제하지 않음)
