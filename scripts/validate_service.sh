@@ -3,38 +3,32 @@ set -e
 
 echo "Validating service..."
 
-# 애플리케이션이 실행 중인지 확인
-# 예시 1: 프로세스 확인
-# if pgrep -f "ljw-app" > /dev/null; then
-#     echo "Application is running"
-# else
-#     echo "Application is not running"
-#     exit 1
-# fi
-
-# 예시 2: HTTP 응답 확인
-# if curl -f http://http://ljw-alb-1059952775.us-east-1.elb.amazonaws.com/app/ > /dev/null 2>&1; then
-#     echo "Application is responding"
-# else
-#     echo "Application is not responding"
-#     exit 1
-# fi
-
-# 예시 3: systemd 서비스 상태 확인
-# if systemctl is-active --quiet httpd; then
-#     echo "Service is active"
-# else
-#     echo "Service is not active"
-#     exit 1
-# fi
-
-# 간단한 검증: 파일이 제대로 배포되었는지 확인
-if [ -d "/home/ec2-user/app" ]; then
-    echo "Deployment directory exists"
-    echo "Validation passed"
+# Tomcat 서비스 상태 확인
+if systemctl is-active --quiet tomcat; then
+    echo "Tomcat service is active"
 else
-    echo "Deployment directory not found"
+    echo "Tomcat service is not active"
     exit 1
 fi
+
+# Tomcat HTTP 응답 확인 (포트 8080)
+echo "Checking Tomcat HTTP response..."
+MAX_RETRIES=10
+RETRY_COUNT=0
+
+while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+    if curl -f http://http://ljw-alb-1059952775.us-east-1.elb.amazonaws.com/app/ > /dev/null 2>&1; then
+        echo "Tomcat is responding on port 8080"
+        echo "Validation passed"
+        exit 0
+    else
+        echo "Waiting for Tomcat to respond... (Attempt $((RETRY_COUNT + 1))/$MAX_RETRIES)"
+        sleep 3
+        RETRY_COUNT=$((RETRY_COUNT + 1))
+    fi
+done
+
+echo "Tomcat is not responding after $MAX_RETRIES attempts"
+exit 1
 
 exit 0
