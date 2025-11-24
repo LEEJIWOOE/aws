@@ -18,11 +18,11 @@ chmod -R 755 /home/ec2-user/app
 if [ -f /home/ec2-user/app/*.war ]; then
     echo "Deploying WAR file to Tomcat..."
     cp /home/ec2-user/app/*.war /usr/share/tomcat/webapps/
-    chown tomcat:tomcat /usr/share/tomcat/webapps/*.war
+    chown tomcat:tomcat /usr/share/tomcat10/webapps/*.war
 fi
 
 # 또는 디렉토리 구조 그대로 배포하는 경우
-# cp -r /home/ec2-user/app/* /usr/share/tomcat/webapps/ROOT/
+# cp -r /home/ec2-user/app/* /usr/share/tomcat10/webapps/ROOT/
 
 echo "AfterInstall completed"
 exit 0
